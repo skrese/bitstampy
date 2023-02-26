@@ -8,7 +8,7 @@ I heartily encourage a fork and welcome any contact about taking over ownership 
 
 # bitstampy
 
-[Bitstamp API](https://www.bitstamp.net/api/) wrapper for Python
+[Bitstamp API](https://www.bitstamp.net/api/v2/) wrapper for Python
 
 # Installation
 
@@ -312,18 +312,4 @@ True / False   # Returns boolean success
 # Get your account's address for bitcoin deposits
 > api.bitcoin_deposit_address(c, k, s)
 # Returns deposit address as string
-```
-
-### Unconfirmed Bitcoin Deposits ###
-
-```python
-# Retrieve list of as-yet unconfirmed bitcoin deposits into your account
-> api.unconfirmed_bitcoin_deposits(c, k, s)
-[                              # List of unconfirmed deposits
-    {
-        'amount': decimal,     ## Amount deposited
-        'address': string,     ## Address deposited to
-        'confirmations': int   ## How many confirmations on the deposit so far
-    }, ...
-]
 ```
