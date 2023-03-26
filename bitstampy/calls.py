@@ -192,6 +192,15 @@ class APITransactionsCall(APICall):
             tx['amount'] = Decimal(tx['amount'])
 
 
+class APIUnconfirmedBitcoinDepositsCall(APIPrivateCall):
+    url = 'btc_unconfirmed/'
+
+    def _process_response(self, response):
+        response['amount'] = Decimal(response['amount'])
+        response['address'] = Decimal(response['address'])
+        response['confirmations'] = int(response['confirmations'])
+
+
 class APIUserTransactionsCall(APIPrivateCall):
     url = 'user_transactions/'
 
