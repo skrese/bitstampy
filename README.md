@@ -313,3 +313,17 @@ True / False   # Returns boolean success
 > api.bitcoin_deposit_address(c, k, s)
 # Returns deposit address as string
 ```
+
+### Unconfirmed Bitcoin Deposits ###
+
+```python
+# Retrieve list of as-yet unconfirmed bitcoin deposits into your account
+> api.unconfirmed_bitcoin_deposits(c, k, s)
+[                              # List of unconfirmed deposits
+    {
+        'amount': decimal,     ## Amount deposited
+        'address': string,     ## Address deposited to
+        'confirmations': int   ## How many confirmations on the deposit so far
+    }, ...
+]
+```
