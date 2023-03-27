@@ -18,11 +18,9 @@ def dt(timestamp):
         timestamp = int(timestamp)
     except ValueError:
         try:
-            timestamp = time.mktime(
-                time.strptime(timestamp, '%Y-%m-%d %H:%M:%S.%f'))
+            timestamp = time.mktime(time.strptime(timestamp, '%Y-%m-%d %H:%M:%S.%f'))
         except ValueError:
-            timestamp = time.mktime(
-                time.strptime(timestamp, '%Y-%m-%d %H:%M:%S'))
+            timestamp = time.mktime(time.strptime(timestamp, '%Y-%m-%d %H:%M:%S'))
     return datetime.datetime.fromtimestamp(timestamp)
 
 
@@ -62,6 +60,10 @@ class APICall(object):
         return response
 
 
+def _get_nonce():
+    return str(int(time.time() * 1e6))
+
+
 class APIPrivateCall(APICall):
     method = 'post'
 
@@ -71,11 +73,8 @@ class APIPrivateCall(APICall):
         self.api_key = api_key
         self.api_secret = api_secret
 
-    def _get_nonce(self):
-        return str(int(time.time() * 1e6))
-
     def call(self, **params):
-        nonce = self._get_nonce()
+        nonce = _get_nonce()
         message = nonce + self.client_id + self.api_key
         signature = hmac.new(
             self.api_secret.encode('utf-8'), msg=message.encode('utf-8'), digestmod=hashlib.sha256)
@@ -168,28 +167,72 @@ class APISellLimitOrderCall(APIPrivateCall):
         response['amount'] = Decimal(response['amount'])
 
 
-class APITickerCall(APICall):
+def process_ticker(ticker):
+    ticker['last'] = Decimal(ticker['last'])
+    ticker['high'] = Decimal(ticker['high'])
+    ticker['low'] = Decimal(ticker['low'])
+    ticker['vwap'] = Decimal(ticker['volume'])
+    ticker['volume'] = Decimal(ticker['volume'])
+    ticker['bid'] = Decimal(ticker['bid'])
+    ticker['ask'] = Decimal(ticker['ask'])
+    ticker['timestamp'] = dt(ticker['timestamp'])
+    ticker['open'] = Decimal(ticker['open'])
+    ticker['open_24'] = Decimal(ticker['open_24'])
+    percent_change_24 = ticker['percent_change_24']
+    if percent_change_24 is not None:
+        ticker['percent_change_24'] = Decimal(percent_change_24)
+
+
+class APITickerAllCall(APICall):
     url = 'ticker/'
 
     def _process_response(self, response):
         for pair in response:
-            pair['last'] = Decimal(pair['last'])
-            pair['high'] = Decimal(pair['high'])
-            pair['low'] = Decimal(pair['low'])
-            pair['volume'] = Decimal(pair['volume'])
-            pair['timestamp'] = dt(pair['timestamp'])
-            pair['bid'] = Decimal(pair['bid'])
-            pair['ask'] = Decimal(pair['ask'])
+            process_ticker(pair)
+
+
+class APITickerCall(APICall):
+
+    def __init__(self, pair):
+        self.pair = pair
+        self.url = f'ticker/{pair}'
+
+    def _process_response(self, response):
+        process_ticker(response)
+
+
+class APITickerHourCall(APICall):
+
+    def __init__(self, pair):
+        self.pair = pair
+        self.url = f'ticker_hour/{pair}'
+
+    def _process_response(self, response):
+        process_ticker(response)
 
 
 class APITransactionsCall(APICall):
-    url = 'transactions/'
+
+    def __init__(self, pair):
+        self.pair = pair
+        self.url = f'transactions/{pair}'
 
     def _process_response(self, response):
         for tx in response:
             tx['date'] = dt(tx['date'])
             tx['price'] = Decimal(tx['price'])
             tx['amount'] = Decimal(tx['amount'])
+
+
+class APITradingPairsInfoCall(APICall):
+    url = 'trading-pairs-info/'
+
+
+class APIOhlcCall(APICall):
+
+    def __init__(self, pair):
+        self.pair = pair
+        self.url = f'ohlc/{pair}'
 
 
 class APIUnconfirmedBitcoinDepositsCall(APIPrivateCall):

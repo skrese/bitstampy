@@ -2,7 +2,6 @@ from setuptools import setup
 
 setup(
     name='bitstampy',
-    version='0.0.9',
     author='https://github.com/unwitting',
     author_email='jackprestonuk@gmail.com',
     packages=['bitstampy'],
@@ -11,6 +10,7 @@ setup(
     license='LICENSE.txt',
     description='Bitstamp API wrapper for Python',
     long_description=open('README.txt').read(),
+    python_requires=">=3.8.5",
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',

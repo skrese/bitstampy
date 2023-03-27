@@ -32,16 +32,55 @@ pip install bitstampy
 ### Ticker ###
 
 ```python
+# Ticker all information
+> api.ticker_all()
+[{
+    'last': decimal,  # Last price in counter currency.
+    'high': decimal,  # Last 24 hours price high.
+    'low': decimal,  # Last 24 hours price low.
+    'vwap': decimal,  # Last 24 hours volume weighted average price.
+    'volume': decimal,  # Last 24 hours volume.
+    'bid': decimal,  # Highest buy order.
+    'ask': decimal  # Lowest sell order.
+    'timestamp': datetime,  # Datetime.
+    'open': decimal  # First price of the day.
+    'open_24': decimal  # 24 hours time delta transaction's price for the given currency pair.
+    'percent_change_24': decimal  # Price change percent from open_24 and last price.
+    'pair': str  # Pair
+}]
+```
+
+### Ticker ###
+
+```python
 # Ticker information
-> api.ticker()
+> api.ticker(pair: str)
 {
-    'timestamp': datetime,   # Datetime
-    'volume': decimal,       # Last 24 hours volume
-    'last': decimal,         # Last BTC price
-    'high': decimal,         # Last 24 hours high
-    'low': decimal,          # Last 24 hours low
-    'bid': decimal,          # Highest buy order
-    'ask': decimal           # Lowest ask order
+    'last': decimal,  # Last price in counter currency.
+    'high': decimal,  # Last 24 hours price high.
+    'low': decimal,  # Last 24 hours price low.
+    'vwap': decimal,  # Last 24 hours volume weighted average price.
+    'volume': decimal,  # Last 24 hours volume.
+    'bid': decimal,  # Highest buy order.
+    'ask': decimal  # Lowest sell order.
+    'timestamp': datetime,  # Datetime.
+    'open': decimal  # First price of the day.
+    'open_24': decimal  # 24 hours time delta transaction's price for the given currency pair.
+    'percent_change_24': decimal  # Price change percent from open_24 and last price.
+}
+```
+
+### Transactions ###
+
+```python
+# Transactions
+> api.transactions(pair: str)
+{
+    'date': datetime,  # Datetime.
+    'tid': int,  # Transaction ID.
+    'price': decimal,  # Price in counter currency.
+    'amount': decimal,  # Amount in base currency.
+    'type': int,  # 0 (buy) or 1 (sell).
 }
 ```
 

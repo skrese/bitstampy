@@ -1,5 +1,7 @@
 from . import calls
 
+from enum import Enum
+
 # Constants
 BUY_LIMIT_ORDER_TYPE_BUY = 0
 BUY_LIMIT_ORDER_TYPE_SELL = 1
@@ -33,6 +35,24 @@ WITHDRAWAL_REQUEST_STATUS_FINISHED = 2
 WITHDRAWAL_REQUEST_STATUS_CANCELLED = 3
 WITHDRAWAL_REQUEST_STATUS_FAILED = 4
 
+
+class Step(Enum):
+    STEP_60 = 60
+    STEP_180 = 180
+    STEP_300 = 300
+    STEP_900 = 900
+    STEP_1800 = 1800
+    STEP_3600 = 3600
+    STEP_7200 = 7200
+    STEP_14400 = 14400
+    STEP_21600 = 21600
+    STEP_43200 = 43200
+    STEP_86400 = 86400
+    STEP_259200 = 259200
+
+
+class APIError(Exception):
+    pass
 
 # Wrapper functions
 def account_balance(client_id, api_key, api_secret):
@@ -121,14 +141,31 @@ def sell_limit_order(client_id, api_key, api_secret, amount, price):
     )
 
 
-def ticker():
-    return calls.APITickerCall().call()
+def ticker_all():
+    return calls.APITickerAllCall().call()
 
 
-def transactions(offset=0, limit=100, sort=TRANSACTIONS_SORT_DESCENDING):
-    return calls.APITransactionsCall().call(
-        offset=offset, limit=limit, sort=sort
-    )
+def ticker(pair: str):
+    return calls.APITickerCall(pair).call()
+
+
+def ticker_hour(pair: str):
+    return calls.APITickerHourCall(pair).call()
+
+
+def transactions(pair: str):
+    return calls.APITransactionsCall(pair).call()
+
+
+def trading_pairs_info():
+    return calls.APITradingPairsInfoCall().call()
+
+
+def ohlc(pair: str, step: Step, limit: int):
+    # TODO: add start and end
+    if limit < 1 or limit > 1000:
+        raise APIError('Limit should be minimum: 1; maximum: 1000')
+    return calls.APIOhlcCall(pair).call(step=step.value, limit=limit)
 
 
 def unconfirmed_bitcoin_deposits(client_id, api_key, api_secret):
